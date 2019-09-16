@@ -1,0 +1,69 @@
+#include <stdio.h>
+int main(){
+    char *time="22:30:59";
+    printf("\
+                                                         aaaaaaaaaa                                 \r\n\
+                                                 aaaaaaaaaaaaaaaaaa                                 \r\n\
+                                             aaaaaaaaaaaaaaaaaaaaaa                                 \r\n\
+                                           aaaaaaaaaaaaaaaaaaaaaaa                                  \r\n\
+                                         aaaaaaaaaaaaaaaaaaaaaaaaa                                  \r\n\
+                      aa                aaaaaaaaaaaaaaaaaaaaaaaaa           a                       \r\n\
+                     aaaa               aaaaaaaaaaaaaaaaaaaaaaaaa       aaaaaaa                     \r\n\
+                       aaa               aaaaaaaaaaaaaaaaaaaaaaa    aaaaaaaaaaaaaaaaaaaaa           \r\n\
+                         aa              aaaaaaaaaaaaaaaaaaaaaa   aaaaaaaaaaaaaaaaaaaaaaaa          \r\n\
+                          aaa           aaaaaaaaaaaaaaaaaaaaaa   aaaaaaaaaaaaaaaaaaaaaaaaaa         \r\n\
+                            aaa        aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa      \r\n\
+                              aaaa  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa    \r\n\
+                                aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r\n\
+                                  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa \r\n\
+                                    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  \r\n\
+                                      aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  \r\n\
+                                        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa    \r\n\
+        aaaaaaaa         aaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa         \r\n\
+           aaaaaaa          aa     aaaaaa   aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa            \r\n\
+           aaaaaaaaa        aa     aaaaaa     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa                    \r\n\
+           aa aaaaaaaa      aa     aaaaaa     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa                        \r\n\
+           aa   aaaaaaaa    aa     aaaaaa    aaa aaaaaaaaaaaaaaaaaaaaaaaaaaa                        \r\n\
+           aa     aaaaaaaa  aa     aaaaaaaaaaaaa   aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa                 \r\n\
+           aa       aaaaaaaaaa     aaaaaa    aaa     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa               \r\n\
+           aa         aaaaaaaa     aaaaaa     aa       aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa             \r\n\
+           aa           aaaaaa     aaaaaa           aa   aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa             \r\n\
+           aa             aaaa     aaaaaa         aaa      aaaaaaaaaaaaaaaaaaaaaaaaaaaaa            \r\n\
+        aaaaaaaa            aa   aaaaaaaaaaaaaaaaaaaa        aaaaaaaaaaaaaaaaaaaaaaaaaaa            \r\n\
+a                                                              aaaaaaaaaaaaaaaaaaaaaaaaaa           \r\n\
+  aaaa                             aaaaaa    aaaaaa  aaaaaaa     aaaaaaaaaaaaaaaaaaaaaaaaa          \r\n\
+ aaaa                              aaaaaa     aaaaaa   aaaaaaa     aaaaaaaaaaaaaaaaaaaaaaaa         \r\n\
+ a   a                             aaaaaa      aaaaaa    aaaaaaa     aaaaaaaaaaaaaaaaaaa            \r\n\
+      aa                           aaaaaa     aaaaaa       aaaaaaa     aaaaaaaaaaaaaaaaa            \r\n\
+    a                              aaaaaa    aaaaaa          aaaaaaa   aaaaaaaaaaaaaaaaaaaa         \r\n\
+     aa                            aaaaaaaaaaaaaa             aaaaaaaa aa aaaaaaaaaaaaaaaaaa        \r\n\
+       a                           aaaaaa  aaaaaaaa             aaaaaaaaa   aaaaaaaaaaaaaaaa        \r\n\
+         aa                        aaaaaa    aaaaaaaa             aaaaaaa     aaaaaaaaaaaaaa        \r\n\
+         a  a                      aaaaaa      aaaaaaaa             aaaaa       aaaaaaaaaaa         \r\n\
+         a                        aaaaaaa        aaaaaaaa             aaa         aaaaaaaaa         \r\n\
+         a    a                                                                     aaaaaa          \r\n\
+            a a a                                                                     aaaaa         \r\n\
+              a                                                                         aaa         \r\n\
+                 a a  a                                                               a   a         \r\n\
+                  a  a  a                                                       a a                 \r\n\
+                        a                                                  a  a aa  a               \r\n\
+                       a    a a                                        a a aaa   a                  \r\n\
+                             a  a    a                           aaa  a    a                        \r\n\
+                               a    a  aa a  a  aaaa aa    a a      a  a                            \r\n\
+                                      a    a  aa  a  aa  a a a a  a  a                              \r\n\
+                                           aa a   a    a a a a                                      \r\n\
+    ");
+    printf("\
+        \n\r|      GUID \t|      NAME    \t|\
+        \n\r|    2289035\t|    You,Hao   \t|\
+        \n\r|    2289036\t|   Deng,Chao  \t|\
+        \n\r|    2289037\t|   Sun,Huili  \t|\
+        \n\r|    2289039\t|    He,Feiyu  \t|\
+        \n\r|    2289042\t|   Su,Haoyuan \t|\
+        \n\r|    2289043\t|  Zeng,Yongqin\t|\
+        \n\r|    2289044\t|    Li,Guanqi \t|\
+        \n\r|    2289046\t|    Li,Yiwei  \t|\
+        \n\r|       TIME: %s CST   \t|\
+    ",time);
+    return 0;
+}

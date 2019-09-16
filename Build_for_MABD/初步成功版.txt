@@ -1,0 +1,252 @@
+// =======================================================================================
+//! @author     lek0cyte
+//!             Glasgow Collage,UESTC.
+//! @date       2017-05-16
+//! @version    1.0
+//! @brief      Individual project code.
+//!             Could be used as controller of card lock based on Mifire card.
+//!             Use the card with a unique physical address for authentication.
+//!             And feed back the name who pass the authentication.
+// =======================================================================================
+
+#include "mbed.h"
+#include "string.h"
+#include "TextLCD.h"
+
+#define COMMAND_PROTOCOL_LEN    4//命令帧除命令参数外长度
+#define RESPONSE_PROTOCOL_LEN   5//回应帧除回应参数外长度
+
+Serial pc(USBTX, USBRX,19200);//usb serial
+Serial reader(p13,p14,19200);//reader
+
+DigitalOut l1(LED1);//four LED
+DigitalOut l2(LED2);
+DigitalOut l3(LED3);
+DigitalOut l4(LED4);
+
+PwmOut buzzer(p26);//蜂鸣器
+
+
+TextLCD lcd(p19,p20,p21,p22,p23,p24);//rs,e,d4,d5,d6,d7
+
+
+//寝室四人姓名及卡片物理地址等数据
+struct data {
+    char name[20];
+    unsigned char cardSN[4];
+};
+struct data room[4] = {
+    { "YouHao",{ 0x9b,0x4c,0xc4,0xa1 } },
+    { "HuMingang",{ 0x5a,0x10,0xa3,0x6a } },
+    { "LiGuangyuan",{ 0xbb,0x08,0xc6,0xa1 } },
+    { "LiuWeihan",{ 0x3b,0x4c,0xcb,0xa1 } },
+};
+
+//蜂鸣器标准发音频率
+unsigned int frequency[] = {
+    523, 587, 659, 698, 784, 880, 988, //中音1-7
+    1047, 1175, 1319, 1397, 1568, 1760, 1976//高音1-7
+};
+
+// =======================================================================================
+//! @brief  按输入周期和节拍控制蜂鸣器发声。
+//! @param [in]  syllable   -- 各节拍的音节数据。
+//! @param [in]  beat -- 每个节拍的长度。
+// =======================================================================================
+void phonation(int *syllable,int *beat)
+{
+    for (int i=0; i<sizeof(beat); i++) {
+        buzzer.period(1 / (2 * (*(frequency + (*(syllable + i) - 1))))); // 设置PWM周期
+        buzzer=0.5; // 设置占空比
+        wait(0.4*beat[i]); // 保持节拍周期
+    }
+    buzzer=0;
+}
+
+// =======================================================================================
+//! @brief  按输入参数播放相应音乐。
+//! @param [in]  parameter   -- 音乐参数。
+// =======================================================================================
+void music(int parameter) {
+    switch(parameter) {
+        case 0:
+            int syllable0[4]= {7,1,2,1};
+            int beat0[4]= {4,1,1,1};
+            phonation(syllable0,beat0);
+            break;
+
+        case 1:
+            int syllable1[7]= {1,1,3,6,1,6,1};
+            int beat1[7]= {1,1,1,1,1,1,1};
+            phonation(syllable1,beat1);
+            break;
+
+        case 2:
+            int syllable2[4]= {7,1,7,1};
+            int beat2[4]= {2,2,2,2};
+            phonation(syllable2,beat2);
+    }
+    buzzer=0;
+}
+
+// =======================================================================================
+//! @brief  计算校验码，对各数据相加，最后取反。
+//! @param [in]  pData   -- 要计算校验和的数据。
+//! @param [in]  dataLen -- 要计算校验和数据的长度。
+//! @return -- 数据的校验和。
+// =======================================================================================
+static unsigned char CheckSum(const void *pData, unsigned char dataLen)
+{
+    const unsigned char *_pData = (const unsigned char *) pData;
+
+    unsigned char checkSum = 0;
+    while (dataLen-- > 0) {
+        checkSum += *_pData++;
+    }
+
+    return ~checkSum;
+}
+
+// =======================================================================================
+//! @brief  接收回应
+//! @param [out]  Response   -- 接收到的数据。
+//! @return -- 接收状态码，1为接收成功，0为失败。
+// =======================================================================================
+int ResiveResponse(unsigned char *Response)
+{
+    int length=0;//数据长度
+    length=reader.getc();
+    unsigned char buf[length];//数据缓冲区
+
+    /*
+    回应帧[指令作用(指令字节数)]:帧长度(1) + 模块地址(1) + 命令码(1) + 状态码(1) + 回应数据(N) + 校验(1)
+    */
+    l3=1;
+    buf[0]=length;
+    for(int i=0; i<length-1; i++) {
+        buf[i+1]=reader.getc();
+    }
+    l3=0;
+
+//读卡模块操作状态确认
+    if(buf[3]!=0) {
+        return 0;
+    }
+
+    //效验码检验
+    if (CheckSum(buf, (unsigned char ) (length - 1)) != buf[length - 1]) {
+        return 0;
+    }
+
+    l4=1;
+    memcpy(Response,buf+4,length-RESPONSE_PROTOCOL_LEN);
+    l4=0;
+    return 1;
+}
+
+// =======================================================================================
+//! @brief  命令读卡模块搜索卡片并读取卡片的物理地址。
+//! @param [out]  cardSN   -- 卡片物理地址。
+//! @return -- 操作状态码，1为操作成功，0为操作失败。
+// =======================================================================================
+int getSN(unsigned char *cardSN)
+{
+    l1=1;
+    /*
+    命令帧[指令作用(命令字节数)]:帧长度(1) + 模块地址(1) + 命令码(1) + 命令参数(N) + 校验(1)
+    */
+    unsigned char buf[5]=
+    {0x04,0x01,0x16,0xE4,'\0'};
+    l1=0;
+    l2=1;
+    reader.printf("%s",buf);//向读卡模块发送命令
+    l1=0;
+    return ResiveResponse(cardSN);
+}
+
+// =======================================================================================
+//! @brief  将得到的地址与数据库中所存取的地址进行逐一比对。
+//! @param [in]  cardSN   -- 要进行比对的物理地址
+//! @return -- 该物理地址相应的卡片主人姓名所在的内存地址，若该物理地址不存在于数据库中，
+//!            则返回空指针。
+// =======================================================================================
+char *Determin(unsigned char *cardSN)
+{
+    l1=1;
+    for(int i=0; i<4; i++) {
+        if(memcmp(cardSN,room[i].cardSN,4)==0) {
+            return room[i].name;
+        }
+    }
+    return NULL;
+    l1=0;
+}
+
+// =======================================================================================
+//! @brief  身份验证成功，发出提示音并显示相应姓名。
+//! @param [in]  Name   -- 该姓名所在的物理地址。
+// =======================================================================================
+void pass(char *Name)
+{
+    lcd.cls();
+    lcd.printf("%s\nWelcome!",Name);
+    music(1);
+    wait(4);
+    lcd.cls();
+}
+
+// =======================================================================================
+//! @brief  身份验证失败，发出提示音并显示警告信息。
+// =======================================================================================
+void fail()
+{
+    lcd.cls();
+    lcd.printf("Warring:You\naren't frients");
+    music(2);
+    wait(2);
+    lcd.cls();
+    lcd.printf("Please contact\nAdmin YouHao");
+    wait(2);
+    lcd.cls();
+}
+
+int main()
+{
+//开机
+    lcd.printf("Guardian system\nof 216");
+    music(0);
+    wait(3);
+    lcd.cls();
+    lcd.printf("Made by\nleuk0cyte");
+    wait(2);
+    lcd.cls();
+
+//每秒搜索两次卡片并尝试读取卡片物理地址，如成功读取卡片信息则进行下一步，反之重复搜索
+    while(1) {
+        lcd.printf("Guardian system\nRunning...");
+        char *Name;
+        unsigned char cardSN[4];
+
+        int flag=0;//接收状态标识
+        while(flag==0) {
+            flag=getSN(cardSN);
+            pc.printf("%i",flag);
+            wait(0.5);
+        }
+
+//用于开发调试，向电脑发送卡片的物理地址信息
+        for(int i=0; i<4; i++) {
+            pc.printf("%x",cardSN[i]);
+        }
+        pc.printf("\n");
+
+//身份验证，并执行相应程序。
+        Name=Determin(cardSN);
+        if(Name!=NULL) {
+            pass(Name);
+        } else {
+            fail();
+        }
+        lcd.cls();//清屏
+    }
+}

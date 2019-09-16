@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.vt": "verilog",
+        "stdio.h": "c"
+    }
+}
